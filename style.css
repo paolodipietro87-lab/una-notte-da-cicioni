@@ -1,0 +1,340 @@
+:root {
+    --neon-blue: #00f3ff;
+    --neon-cyan: #00e5ff;
+    --neon-pink: #ff00ff;
+    --neon-yellow: #ffff00;
+    --neon-red: #ff003c;
+    --bg-dark: #0a0a0c;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-canvas {
+    background: #111;
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Overlays */
+.overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background: rgba(10, 10, 12, 0.95);
+    border: 2px solid var(--neon-pink);
+    box-shadow: 0 0 50px rgba(255, 0, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    text-align: center;
+    padding: 2rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.5s ease;
+}
+
+.hidden {
+    display: none !important;
+    opacity: 0;
+}
+
+/* Typography */
+.neon-text {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 2rem;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+    margin-bottom: 2rem;
+    animation: flicker 3s infinite alternate;
+}
+
+.neon-red {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.5rem;
+    color: var(--neon-red);
+    text-shadow: 0 0 10px var(--neon-red);
+    margin-bottom: 1rem;
+}
+
+/* UI Elements */
+.pixel-btn {
+    font-family: 'Press Start 2P', cursive;
+    background: transparent;
+    border: 4px solid var(--neon-pink);
+    color: var(--neon-pink);
+    padding: 1rem 2rem;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--neon-pink);
+    transition: all 0.2s;
+}
+
+.pixel-btn:hover {
+    background: var(--neon-pink);
+    color: black;
+    box-shadow: 0 0 30px var(--neon-pink);
+}
+
+.pixel-btn:active {
+    transform: scale(0.95);
+}
+
+.pub-exterior {
+    width: 100%;
+    max-width: 400px;
+    height: 200px;
+    background: url('assets/exterior.png') no-repeat center center;
+    background-size: contain;
+    margin: 20px auto;
+    position: relative;
+    border: 2px solid var(--neon-pink);
+    box-shadow: 0 0 15px var(--neon-pink);
+}
+
+/* HUD */
+#hud {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    z-index: 10;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: var(--neon-cyan);
+    flex-wrap: wrap;
+    pointer-events: none;
+}
+
+#combo-info {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    color: var(--neon-yellow);
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px var(--neon-yellow);
+    animation: flash 0.5s infinite alternate;
+}
+
+@keyframes flash {
+    from {
+        opacity: 0.5;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.stat {
+    background: rgba(10, 10, 12, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bar-container {
+    width: 150px;
+    height: 15px;
+    background: #333;
+    border: 1px solid #555;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+#ebbrezza-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4caf50, #ffeb3b, #f44336);
+    transition: width 0.3s ease;
+}
+
+/* Mobile Controls */
+#mobile-controls {
+    position: absolute;
+    bottom: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 60;
+}
+
+.touch-btn {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 4px solid white;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Animations */
+@keyframes flicker {
+
+    0%,
+    19%,
+    21%,
+    23%,
+    25%,
+    54%,
+    56%,
+    100% {
+        opacity: 1;
+    }
+
+    20%,
+    22%,
+    24%,
+    55% {
+        opacity: 0.4;
+    }
+}
+
+/* Game Over Visual */
+.game-over-visual {
+    font-size: 5rem;
+    margin: 2rem 0;
+}
+
+/* Effects */
+.drunken-blur {
+    filter: blur(var(--blur-amount, 0px));
+}
+
+@media (min-width: 768px) {
+    #mobile-controls {
+        display: none !important;
+    }
+}
+
+/* New CSS for Advanced Features */
+.achievements-mini {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.achievement-badge {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    filter: grayscale(1);
+    transition: all 0.3s;
+}
+
+.achievement-badge.unlocked {
+    filter: grayscale(0);
+    box-shadow: 0 0 10px var(--neon-cyan);
+    border-color: #fff;
+}
+
+.achievements-list {
+    margin: 15px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.achievement-item {
+    background: rgba(0, 243, 255, 0.1);
+    border-left: 4px solid var(--neon-cyan);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 0.7rem;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Screen Effects */
+#game-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, var(--vignette-opacity, 0)) 100%);
+    z-index: 100;
+}
+
+.chromatic-aberration {
+    animation: chromatic-shift 0.2s infinite;
+}
+
+@keyframes chromatic-shift {
+    0% {
+        filter: drop-shadow(2px 0 red) drop-shadow(-2px 0 blue);
+    }
+
+    50% {
+        filter: drop-shadow(-2px 0 red) drop-shadow(2px 0 blue);
+    }
+
+    100% {
+        filter: drop-shadow(1px 1px red) drop-shadow(-1px -1px blue);
+    }
+}
